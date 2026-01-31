@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROSES • Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --red:#dc2626; --blue:#2563eb; --green:#16a34a;
+      --bg:#f8fafc; --card:#ffffff; --text:#0f172a; --muted:#64748b; --border:#e2e8f0;
+      --shadow: 0 10px 30px rgba(2,6,23,.08);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,#ffffff, var(--bg)); color:var(--text);}
+    .wrap{max-width:1100px;margin:0 auto;padding:12px 12px 18px;}
+    .header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);
+      border:1px solid var(--border); border-radius:var(--radius); box-shadow: var(--shadow);
+      padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .brand{display:flex; align-items:center; gap:10px;}
+    .logo{width:38px;height:38px;border-radius:12px; background:
+      conic-gradient(from 180deg, var(--red), var(--blue), var(--green), var(--red));
+      box-shadow:0 8px 18px rgba(2,6,23,.12);
+    }
+    .who{display:flex; align-items:center; gap:10px; min-width:0;}
+    .avatar{width:40px;height:40px;border-radius:999px;background:#f1f5f9;border:1px solid var(--border);display:grid;place-items:center;overflow:hidden;font-weight:700;color:#334155}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .meta{min-width:0}
+    .meta b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; max-width: 46vw;}
+    .meta span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; max-width: 46vw;}
+    .actions{display:flex; gap:8px; align-items:center;}
+    .btn{border:1px solid var(--border); background:#fff; border-radius:12px; padding:9px 12px; font-weight:600; cursor:pointer; font-size:13px}
+    .btn.primary{border:none;background:linear-gradient(90deg,var(--red),var(--blue)); color:#fff;}
+    .chip{font-size:12px;color:var(--muted);padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;}
+    .grid{display:grid; gap:12px; margin-top:12px; grid-template-columns: 360px 1fr;}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr;} .meta b,.meta span{max-width: 70vw;} }
+    .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow: var(--shadow); overflow:hidden;}
+    .card .body{padding:14px;}
+    .kv{display:grid; grid-template-columns: 110px 1fr; gap:8px; font-size:13px;}
+    .kv .k{color:var(--muted)}
+    .iframeWrap{position:relative;}
+    .loading{position:absolute; inset:0; display:grid; place-items:center; background:rgba(255,255,255,.92); border-radius:var(--radius);}
+    .loading .box{text-align:center; padding:14px 16px; border:1px dashed var(--border); border-radius:14px; color:var(--muted);}
+    iframe{width:100%; height: calc(100vh - 170px); border:0; border-radius:var(--radius); background:#fff;}
+    @media (max-width: 980px){ iframe{height: calc(100vh - 240px);} }
+  </style>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div style="font-weight:800;font-size:14px;line-height:1.1">ROSES Dashboard</div>
+          <div style="font-size:12px;color:var(--muted)">Mesra pengguna & smartphone</div>
+        </div>
+      </div>
+
+      <div class="who">
+        <div class="avatar" id="avatarBox">?</div>
+        <div class="meta">
+          <b id="nameVal">-</b>
+          <span id="emailVal">-</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="chip" id="lastLoginChip">-</div>
+        <button class="btn" onclick="goHome()">Home</button>
+        <button class="btn primary" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="body">
+          <div style="font-weight:800;margin-bottom:10px">Profil</div>
+          <div class="kv">
+            <div class="k">User ID</div><div class="v" id="subVal">-</div>
+            <div class="k">Status</div><div class="v" id="statusVal">-</div>
+            <div class="k">Last login</div><div class="v" id="lastLoginVal">-</div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn" onclick="reloadApp()">Reload App</button>
+            <button class="btn" onclick="copyUserInfo()">Copy Info</button>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:12px">
+            Kandungan ROSES dimuatkan di bawah melalui embed (iframe).
+          </div>
+        </div>
+      </div>
+
+      <div class="card iframeWrap">
+        <div class="loading" id="loading">
+          <div class="box">
+            Memuatkan sistem ROSES…<br/>
+            <span style="font-size:12px">Jika lama, tekan “Reload App”.</span>
+          </div>
+        </div>
+        <iframe id="appFrame" title="ROSES App" referrerpolicy="no-referrer"></iframe>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const KEY_LS = "ROSES_SESSION";
+  const KEY_SS = "ROSES_SESSION_SS";
+  const APPS_EXEC = "https://script.google.com/a/macros/qalish.com/s/AKfycbzSOn-nWGXSGxC2Dt5T-nSH3DA2RY1HivQFVpVR0gTw1R_E49_NxZ6fhKUe3UEts6uNFA/exec";
+
+  function loadSession(){
+    const a = localStorage.getItem(KEY_LS);
+    const b = sessionStorage.getItem(KEY_SS);
+    try{ return JSON.parse(a || b || "null"); }catch(e){ return null; }
+  }
+  function clearSession(){
+    localStorage.removeItem(KEY_LS);
+    sessionStorage.removeItem(KEY_SS);
+  }
+  function fmt(ts){
+    try{ return new Date(ts).toLocaleString("ms-MY"); }catch(e){ return "-"; }
+  }
+
+  function guard(){
+    const s = loadSession();
+    if(!s || !s.id_token || !s.profile) {
+      window.location.replace("./index.html");
+      return null;
+    }
+    return s;
+  }
+
+  function renderProfile(s){
+    const p = s.profile || {};
+    const avatar = document.getElementById("avatarBox");
+    const initial = (String(p.name||p.email||"?").trim().slice(0,1) || "?").toUpperCase();
+    if(p.picture){
+      avatar.innerHTML = '<img alt="Profil" src="'+p.picture+'" referrerpolicy="no-referrer" onerror="this.remove(); document.getElementById(\\'avatarBox\\').textContent=\\''+initial+'\\';" />';
+      avatar.textContent = initial;
+    } else {
+      avatar.textContent = initial;
+    }
+    document.getElementById("nameVal").textContent = p.name || "(Tiada nama)";
+    document.getElementById("emailVal").textContent = p.email || "(Tiada email)";
+    document.getElementById("subVal").textContent = p.sub || "-";
+    document.getElementById("statusVal").textContent = "AKTIF";
+    document.getElementById("lastLoginChip").textContent = "Last login: " + fmt(s.lastLogin);
+    document.getElementById("lastLoginVal").textContent = fmt(s.lastLogin);
+  }
+
+  function loadIframe(s){
+    const frame = document.getElementById("appFrame");
+    const loading = document.getElementById("loading");
+    loading.style.display = "grid";
+
+    const url = APPS_EXEC.replace(/\?.*$/, "") + "?id_token=" + encodeURIComponent(s.id_token);
+    frame.src = url;
+
+    frame.onload = () => { loading.style.display = "none"; };
+  }
+
+  function reloadApp(){
+    const s = guard();
+    if(!s) return;
+    loadIframe(s);
+  }
+
+  function copyUserInfo(){
+    const s = guard();
+    if(!s) return;
+    const p = s.profile;
+    const t = `Nama: ${p.name||""}\nEmail: ${p.email||""}\nUser ID: ${p.sub||""}\nLast login: ${fmt(s.lastLogin)}`;
+    navigator.clipboard.writeText(t).then(()=>alert("Info disalin."), ()=>alert("Tak dapat salin."));
+  }
+
+  function goHome(){ window.location.href = "./index.html"; }
+
+  function logout(){
+    clearSession();
+    try{
+      if(window.google && google.accounts && google.accounts.id){
+        google.accounts.id.disableAutoSelect();
+      }
+    }catch(e){}
+    window.location.replace("./index.html");
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const s = guard();
+    if(!s) return;
+    renderProfile(s);
+    loadIframe(s);
+  });
+</script>
+</body>
+</html>
