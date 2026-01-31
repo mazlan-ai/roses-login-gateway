@@ -1,262 +1,166 @@
 <!doctype html>
 <html lang="ms">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ROSES • Gateway</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ROSES • Login Gateway</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root {
-      /* Branding: Merah • Putih • Biru • Hijau */
-      --red:  #dc2626;
-      --blue: #2563eb;
-      --green:#16a34a;
-      --white:#ffffff;
-
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --shadow: 0 10px 28px rgba(0,0,0,.08);
-      --radius: 18px;
+    :root{
+      --r-red:#dc2626; --r-blue:#2563eb; --r-green:#16a34a; --r-white:#ffffff;
+      --bg:#0b1220; --muted:#9fb0d0;
+      --radius:20px;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
+    body{
+      min-height:100vh;
       background:
-        radial-gradient(1200px 600px at 15% 0%, rgba(37,99,235,.10) 0%, transparent 55%),
-        radial-gradient(900px 500px at 92% 8%, rgba(220,38,38,.10) 0%, transparent 55%),
-        radial-gradient(900px 520px at 60% 100%, rgba(22,163,74,.10) 0%, transparent 55%),
-        var(--bg);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
+        radial-gradient(900px 450px at 10% 10%, rgba(37,99,235,.22), transparent 60%),
+        radial-gradient(700px 420px at 90% 10%, rgba(220,38,38,.22), transparent 60%),
+        radial-gradient(700px 520px at 50% 100%, rgba(22,163,74,.18), transparent 65%),
+        linear-gradient(180deg, #070b14 0%, #0b1220 60%, #070b14 100%);
+      color:#eaf0ff;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-    .wrap { min-height: 100vh; display: grid; place-items: center; padding: 22px 14px; }
-    .card {
-      width: 100%;
-      max-width: 880px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .brand-pill{
+      display:inline-flex; align-items:center; gap:.6rem;
+      padding:.5rem .75rem;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      backdrop-filter: blur(10px);
     }
-    .hero {
-      padding: 22px 20px 14px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%);
-      position: relative;
+    .logo{
+      width:38px; height:38px; border-radius:12px;
+      background: linear-gradient(135deg, var(--r-red), var(--r-blue));
+      display:grid; place-items:center; font-weight:800;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
     }
-    .ribbon {
-      position:absolute; inset:0 0 auto 0;
-      height: 6px;
-      background: linear-gradient(90deg, var(--red), var(--white), var(--blue), var(--green));
+    .cardx{
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 22px 80px rgba(0,0,0,.45);
+      overflow:hidden;
     }
-    .title { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 6px; }
-    .logoWrap {
-      width: 46px; height: 46px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: #fff;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      box-shadow: 0 8px 18px rgba(17,24,39,.10);
-      flex: 0 0 auto;
+    .cardx .inner{
+      padding:28px;
+      background:
+        radial-gradient(900px 400px at 20% 0%, rgba(37,99,235,.15), transparent 55%),
+        radial-gradient(700px 360px at 90% 40%, rgba(220,38,38,.12), transparent 58%),
+        rgba(255,255,255,.02);
     }
-    .logoWrap img { width: 100%; height: 100%; object-fit: cover; display:block; }
-    .logoFallback {
-      width: 100%;
-      height: 100%;
-      display:grid;
-      place-items:center;
-      font-weight: 900;
-      color: #111827;
-      background: linear-gradient(135deg, rgba(37,99,235,.10), rgba(220,38,38,.10));
+    .btn-roses{
+      border:none;
+      background: linear-gradient(135deg, var(--r-red), var(--r-blue));
+      box-shadow: 0 14px 40px rgba(37,99,235,.18), 0 14px 40px rgba(220,38,38,.18);
     }
-    h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
-    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; max-width: 74ch; }
-    .content { padding: 18px 20px 22px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 18px; }
-    @media (max-width: 860px) { .content { grid-template-columns: 1fr; } }
-    .panel { border: 1px solid var(--border); border-radius: 16px; padding: 14px; background: #fff; }
-    .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    input {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 14px;
-      outline: none;
-    }
-    input:focus {
-      border-color: rgba(37,99,235,.35);
-      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
-    }
-    .muted { color: var(--muted); font-size: 13px; line-height: 1.45; margin-top: 10px; }
-    .actions { display: grid; gap: 10px; align-content: start; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border-radius: 14px;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: #111827;
-      color: #fff;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      user-select: none;
-    }
-    .btn.secondary { background: #fff; color: #111827; }
-    .btn:active { transform: translateY(1px); }
-    .fine { margin-top: 10px; font-size: 12px; color: var(--muted); }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top: 10px; }
-    .check { display:flex; gap:8px; align-items:center; user-select:none; font-size: 13px; color: #111827; }
-    .pill {
-      display:inline-flex; align-items:center; gap:8px;
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background:#fff;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--green); }
+    .btn-roses:hover{ filter: brightness(1.05); }
+    .meta{ color:var(--muted); font-size:.9rem; }
+    .divider{ height:1px; background:rgba(255,255,255,.10); margin:18px 0; }
+    a.link{ color:#cfe0ff; text-decoration:none; border-bottom:1px dashed rgba(207,224,255,.55); }
+    a.link:hover{ color:#fff; border-bottom-color:#fff; }
+    .badge-soft{ background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.14); }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="hero">
-        <div class="ribbon"></div>
-        <div class="title">
-          <div class="logoWrap">
-            <!-- Letak logo sekolah dalam repo GitHub sebagai "logo.png" -->
-            <img src="./logo.png" alt="Logo Sekolah" onerror="this.remove(); document.getElementById('logoFallback').style.display='grid';">
-            <div id="logoFallback" class="logoFallback" style="display:none;">RO</div>
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-xl-7">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="brand-pill">
+            <div class="logo">R</div>
+            <div>
+              <div class="fw-bold lh-1">ROSES</div>
+              <div class="meta lh-1">Login Gateway</div>
+            </div>
           </div>
-          <div>
-            <h1>Selamat datang ke ROSES</h1>
-            <div class="subtitle">Sistem Perekodan Kehadiran. Sila log masuk untuk meneruskan.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="content">
-        <div class="panel">
-          <div class="label">URL Web App ROSES (exec)</div>
-          <input id="webapp" value="https://script.google.com/macros/s/AKfycbw2SESSgVwauvEzzOXA144jg3LIE9DHQ5kVYYcFfNwP09SWFS-0z9C7wthI8tF7Xwlo7g/exec" inputmode="url" />
-          <div class="row">
-            <label class="check">
-              <input id="rememberMe" type="checkbox" />
-              Remember me
-            </label>
-            <span class="pill" id="lastLoginPill" title="Tarikh/masa login terakhir"><span class="dot"></span><span id="lastLoginText">Belum login</span></span>
-          </div>
-          <div class="muted">
-            Anda boleh ubah URL ini jika anda buat <i>new deployment</i> dan mendapat URL /exec yang baru.
-          </div>
+          <span class="badge badge-soft rounded-pill px-3 py-2">Merah • Putih • Biru • Hijau</span>
         </div>
 
-        <div class="actions">
-          <div id="g_id_onload"
-               data-client_id="1080063104374-fgdvk7bb1471m22n837d5hscbddlkrdb.apps.googleusercontent.com"
-               data-callback="onGoogleCredential"
-               data-auto_prompt="false"></div>
+        <div class="cardx">
+          <div class="inner">
+            <h1 class="h3 fw-bold mb-2">Selamat Datang 👋</h1>
+            <p class="meta mb-3">
+              Ini ialah halaman pintu masuk untuk <b>Sistem Perekodan Kehadiran ROSES</b>.
+              Klik <b>Login</b> untuk masuk ke aplikasi.
+            </p>
 
-          <div class="g_id_signin" data-type="standard" data-size="large" data-shape="pill"></div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <button id="btnLogin" class="btn btn-roses btn-lg text-white px-4">
+                Login ke ROSES
+              </button>
+              <a class="link" href="https://script.google.com/macros/s/AKfycbw2SESSgVwauvEzzOXA144jg3LIE9DHQ5kVYYcFfNwP09SWFS-0z9C7wthI8tF7Xwlo7g/exec" target="_blank" rel="noopener">Buka terus Web App</a>
+            </div>
 
-          <a class="btn secondary" href="#" onclick="openProfile(); return false;">Lihat Profil</a>
+            <div class="divider"></div>
 
-          <div class="fine">
-            Tip: Jika anda sudah log masuk sebelum ini, tekan <b>Lihat Profil</b> untuk teruskan.
+            <div class="row g-2 align-items-center">
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+                <div class="meta mt-1">
+                  Login terakhir: <b id="lastLogin">-</b>
+                </div>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-light btn-sm" id="btnClear">Padam simpanan</button>
+              </div>
+            </div>
+
+            <div class="mt-3 meta">
+              Jika selepas login berjaya anda menerima <i>token</i> pada URL (contoh: <code>#id_token=...</code>),
+              gunakan halaman <a class="link" href="./profile.html">profile.html</a> untuk papar profil & simpan data.
+            </div>
           </div>
+        </div>
+
+        <div class="text-center mt-4 meta">
+          © ROSES • Dibina untuk penggunaan sekolah
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
 <script>
-function setWebAppUrl(url){
-  try{ localStorage.setItem("ROSES_WEBAPP_URL", url || ""); }catch(e){}
-}
-function getWebAppUrl(){
-  try{ return (localStorage.getItem("ROSES_WEBAPP_URL") || "").trim(); }catch(e){ return ""; }
-}
-function setRememberMe(v){
-  try{ localStorage.setItem("ROSES_REMEMBER", v ? "1" : "0"); }catch(e){}
-}
-function getRememberMe(){
-  try{ return (localStorage.getItem("ROSES_REMEMBER") || "1") === "1"; }catch(e){ return true; }
-}
-function setLastLoginNow(){
-  try{ localStorage.setItem("ROSES_LAST_LOGIN", new Date().toISOString()); }catch(e){}
-}
-function getLastLogin(){
-  try{ return (localStorage.getItem("ROSES_LAST_LOGIN") || "").trim(); }catch(e){ return ""; }
-}
-function fmtMsIso(iso){
-  if(!iso) return "";
-  try{
-    const d = new Date(iso);
-    const pad = n => (n<10? "0"+n : ""+n);
-    return pad(d.getDate()) + "/" + pad(d.getMonth()+1) + "/" + d.getFullYear()
-      + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
-  }catch(e){ return ""; }
-}
+  const KEY = "roses_gateway";
+  function fmt(ts){
+    try {
+      const d = new Date(ts);
+      return d.toLocaleString("ms-MY", { hour12:false });
+    } catch(e){ return "-"; }
+  }
 
-(function initDefaults(){
-  // webapp
-  var saved = getWebAppUrl();
-  var el = document.getElementById("webapp");
-  if(saved && el) el.value = saved;
+  function loadState(){
+    const st = JSON.parse(localStorage.getItem(KEY) || "{}");
+    document.getElementById("rememberMe").checked = !!st.remember;
+    document.getElementById("lastLogin").textContent = st.lastLogin ? fmt(st.lastLogin) : "-";
+  }
 
-  // remember me
-  var rm = document.getElementById("rememberMe");
-  rm.checked = getRememberMe();
-  rm.addEventListener("change", function(){ setRememberMe(rm.checked); });
+  function saveState(partial){
+    const st = JSON.parse(localStorage.getItem(KEY) || "{}");
+    const next = Object.assign(st, partial);
+    localStorage.setItem(KEY, JSON.stringify(next));
+    loadState();
+  }
 
-  // last login
-  var ll = fmtMsIso(getLastLogin());
-  document.getElementById("lastLoginText").textContent = ll || "Belum login";
-})();
+  document.getElementById("rememberMe").addEventListener("change", (e)=>{
+    saveState({ remember: e.target.checked });
+  });
 
-function storeToken(idToken){
-  const remember = document.getElementById("rememberMe").checked;
-  setRememberMe(remember);
-  try{
-    if(remember){
-      localStorage.setItem("ROSES_ID_TOKEN", idToken);
-      sessionStorage.removeItem("ROSES_ID_TOKEN");
-    }else{
-      sessionStorage.setItem("ROSES_ID_TOKEN", idToken);
-      localStorage.removeItem("ROSES_ID_TOKEN");
-    }
-  }catch(e){}
-}
+  document.getElementById("btnClear").addEventListener("click", ()=>{
+    localStorage.removeItem(KEY);
+    loadState();
+  });
 
-function onGoogleCredential(resp){
-  const idToken = resp && resp.credential;
-  const url = (document.getElementById("webapp").value || "").trim();
-  if(!url) return alert("Sila isi URL Web App ROSES.");
-  if(!idToken) return alert("Login gagal: token kosong.");
+  document.getElementById("btnLogin").addEventListener("click", ()=>{
+    const remember = document.getElementById("rememberMe").checked;
+    if (remember) saveState({ lastLogin: Date.now() });
+    window.location.href = "https://script.google.com/macros/s/AKfycbwI9RKhdx8R1df-VxGPT6uGwCdbLXv_4CNOa5ndmdgDPf6y2_lxurg7lkhpiHl_xV4RLQ/exec";
+  });
 
-  setWebAppUrl(url);
-  storeToken(idToken);
-  setLastLoginNow();
-
-  // Pergi ke halaman profil (page kedua)
-  window.location.href = "./profile.html";
-}
-
-function openProfile(){
-  const url = (document.getElementById("webapp").value || "").trim();
-  if(url) setWebAppUrl(url);
-  window.location.href = "./profile.html";
-}
+  loadState();
 </script>
 </body>
 </html>
