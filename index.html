@@ -32,7 +32,7 @@
       <div style="height:14px;"></div>
 
       <label class="muted">URL Web App ROSES (exec)</label>
-      <input id="webapp" value="https://script.google.com/macros/s/AKfycbxpGARDHNEg77w6i96VvVrEBdIyhCcpl_6aiXvoywa1WFQjeQLff5Gxd6wMwnDJ2Cbo_g/exec">
+      <input id="webapp" value="https://script.google.com/macros/s/AKfycbzctoDmruPcbDJZSBJh0pzyEFV8pLl-2KAzd2R_dHk69c57-c9kA_GiAwyLFKFJ40VI7Q/exec">
 
       <div style="height:16px;"></div>
 
@@ -48,7 +48,7 @@
 
       <div style="height:14px;"></div>
       <div class="muted">
-        Selepas login berjaya, anda akan dihantar semula ke Web App dengan token di URL hash (<code>#id_token=...</code>).
+        Selepas login berjaya, anda akan dihantar semula ke Web App dengan token di URL query (<code>#id_token=...</code>).
         Web App akan simpan profil secara automatik.
       </div>
     </div>
@@ -60,7 +60,7 @@ function onGoogleCredential(resp){
   if(!idToken) return alert("Login gagal: token kosong.");
   const url = document.getElementById("webapp").value.trim();
   if(!url) return alert("Sila isi URL Web App.");
-  const next = url.replace(/#.*$/,"") + "#id_token=" + encodeURIComponent(idToken);
+  const next = url.replace(/#.*$/,"") + "?id_token=" + encodeURIComponent(idToken);
   window.location.href = next;
 }
 </script>
